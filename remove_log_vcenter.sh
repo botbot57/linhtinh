@@ -38,3 +38,6 @@ if [ "$USAGE" -ge "$THRESHOLD" ]; then
 else
     echo "Storage usage in $LOG_DIR is below $THRESHOLD%. No logs need to be deleted."
 fi
+
+#crontab -e
+# 0 2 * * 6 /path/to/script.sh
