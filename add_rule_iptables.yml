@@ -1,0 +1,20 @@
+- name: Add iptables rules at specific locations
+  hosts: all
+  become: yes
+  vars_files:
+    - var_iptables.yml
+  tasks:
+    - name: Add INPUT rule for SSH
+#      command: sed -i '/#INPUT/n;a -A INPUT -d {{ item.ip }} -p {{ item.protocol }} --dport {{ item.port }} -j ACCEPT' /etc/sysconfig/iptables
+      command: sed -i '/#INPUT/n a -A INPUT -s {{ item.ip }} -p {{ item.protocol }} --dport {{ item.port }} -j ACCEPT' /etc/sysconfig/iptables
+      loop: "{{ INPUT.rules }}"
+    - name: Add OUTPUT rule for HTTPS
+      command: sed -i '/#OUTPUT/n a -A OUTPUT -d {{ item.ip }} -p {{ item.protocol }} --dport {{ item.port }} -j ACCEPT' /etc/sysconfig/iptables
+      loop: "{{ OUTPUT.rules }}"
+    - name: Restart iptables service
+      systemd:
+        name: iptables
+        state: restarted
+
+    - name: Save iptables rules
+      command: service iptables save
